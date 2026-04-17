@@ -1,0 +1,45 @@
+# Environnement Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Cache API Open-Meteo
+.cache/
+*.sqlite
+*.db
+
+# Données & modèles sérialisés (sauf si versionnés volontairement)
+data/*.csv
+data/*.parquet
+data/*.json
+model/registry/*.pkl
+model/registry/*.joblib
+model/registry/*.json
+
+# Logs & monitoring
+monitoring/output/
+*.log
+
+# Variables d'environnement
+.env
+.env.*
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Coverage & tests
+.coverage
+htmlcov/
+.pytest_cache/

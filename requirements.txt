@@ -1,0 +1,26 @@
+# Data & ML
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.4
+statsmodels>=0.14
+scipy>=1.12
+
+# API météo
+openmeteo-requests>=0.2
+requests-cache>=1.2
+retry-requests>=2.0
+
+# Visualisation
+matplotlib>=3.8
+
+# Notebook
+ipykernel>=6.29
+tqdm>=4.66
+
+# API REST (déploiement)
+fastapi>=0.111
+uvicorn[standard]>=0.29
+
+# Tests
+pytest>=8.0
+httpx>=0.27
