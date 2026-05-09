@@ -16,6 +16,12 @@ build/
 .cache/
 *.sqlite
 *.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
 
 # Données & modèles sérialisés (sauf si versionnés volontairement)
 data/*.csv
