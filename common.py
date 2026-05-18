@@ -18,3 +18,5 @@ BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "data" / "weather.db"
 MODEL_PATH = BASE_DIR / "model" / "registry" / "weather_rf_v1.joblib"
 METADATA_PATH = BASE_DIR / "model" / "registry" / "weather_rf_v1_metadata.json"
+
+APP_VERSION = "0.1.0"

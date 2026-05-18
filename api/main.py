@@ -19,6 +19,13 @@ from pydantic import BaseModel
 
 import common
 from model.weather_model import load_weather_model, predict_temperature
+import logging
+
+
+common.APP_VERSION
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # --- Charger le modèle au démarrage de l'API ---
@@ -108,54 +115,94 @@ def save_prediction(data: WeatherInput, predicted_temperature: float):
 # --- Endpoint racine ---
 @app.get("/")
 def root():
+    logger.info("Endpoint / appelé")
     return {"message": "Weather Prediction API is running"}
 
 
 # --- Endpoint /predict ---
 @app.post("/predict")
 def predict(data: WeatherInput):
-    validate_weather_input(data)
+    logger.info("Endpoint /predict appelé")
 
-    X = pd.DataFrame([data.model_dump()])
-
-    prediction = predict_temperature(model, X)
-    predicted_temperature = float(prediction[0])
-
-    save_prediction(data, predicted_temperature)
-
-    return {
-        "predicted_temperature_2m": predicted_temperature,
-        "model_version": model_version
-    }
-
-
-# --- Endpoint /predictions : lire les prédictions sauvegardées ---
-@app.get("/predictions")
-def get_predictions():
-    with sqlite3.connect(common.DB_PATH) as con:
-        data = pd.read_sql("SELECT * FROM predictions", con)
-
-    return data.to_dict(orient="records")
-
-
-# --- Endpoint /predict_batch : prédire plusieurs exemples en une fois ---
-@app.post("/predict_batch")
-def predict_batch(items: list[WeatherInput]):
-    results = []
-
-    for data in items:
+    try:
         validate_weather_input(data)
 
         X = pd.DataFrame([data.model_dump()])
-
         prediction = predict_temperature(model, X)
         predicted_temperature = float(prediction[0])
 
         save_prediction(data, predicted_temperature)
 
-        results.append({
+        return {
             "predicted_temperature_2m": predicted_temperature,
             "model_version": model_version
-        })
+        }
 
-    return results
+    except HTTPException:
+        logger.warning("Erreur de validation sur /predict", exc_info=True)
+        raise
+
+    except Exception:
+        logger.error("Erreur inattendue sur /predict", exc_info=True)
+        raise HTTPException(status_code=500, detail="Erreur interne pendant la prédiction")
+
+
+# --- Endpoint /predictions : lire les prédictions sauvegardées ---
+@app.get("/predictions")
+def get_predictions():
+    logger.info("Endpoint /predictions appelé")
+
+    try:
+        with sqlite3.connect(common.DB_PATH) as con:
+            data = pd.read_sql("SELECT * FROM predictions", con)
+
+        logger.info("Prédictions récupérées avec succès")
+
+        return data.to_dict(orient="records")
+
+    except Exception:
+        logger.error("Erreur lors de la récupération des prédictions", exc_info=True)
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération des prédictions")
+
+
+
+# --- Endpoint /predict_batch : prédire plusieurs exemples en une fois ---
+@app.post("/predict_batch")
+def predict_batch(items: list[WeatherInput]):
+    logger.info("Endpoint /predict_batch appelé avec %s éléments", len(items))
+
+    try:
+        results = []
+
+        for data in items:
+            validate_weather_input(data)
+
+            X = pd.DataFrame([data.model_dump()])
+            prediction = predict_temperature(model, X)
+            predicted_temperature = float(prediction[0])
+
+            save_prediction(data, predicted_temperature)
+
+            results.append({
+                "predicted_temperature_2m": predicted_temperature,
+                "model_version": model_version
+            })
+
+        logger.info("Prédictions batch générées avec succès")
+
+        return results
+
+    except HTTPException:
+        logger.warning("Erreur de validation sur /predict_batch", exc_info=True)
+        raise
+
+    except Exception:
+        logger.error("Erreur inattendue sur /predict_batch", exc_info=True)
+        raise HTTPException(status_code=500, detail="Erreur interne pendant la prédiction batch")
+
+@app.get("/version")
+def get_version():
+    logger.info("Endpoint /version appelé")
+    return common.APP_VERSION
+
+ 
