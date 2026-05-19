@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY api/ api/
 COPY model/ model/
 COPY data/ data/
+COPY tests/ tests/
 COPY common.py .
 
 EXPOSE 8000
