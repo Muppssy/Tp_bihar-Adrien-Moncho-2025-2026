@@ -1,0 +1,92 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  unit-tests:
+    name: Run unit and API tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - run: pytest tests/
+
+  build-and-push:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Convert image name to lowercase
+        run: echo "IMAGE_NAME_LOWER=${REGISTRY}/${IMAGE_NAME,,}" >> $GITHUB_ENV
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log into GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image on pull request
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: ${{ env.IMAGE_NAME_LOWER }}:${{ github.sha }}
+
+      - name: Build and push image on master
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME_LOWER }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME_LOWER }}:latest
+          build-args: |
+            APP_VERSION=${{ github.sha }}
+
+  test-docker-image:
+    name: Test pushed Docker image
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: Convert image name to lowercase
+        run: echo "IMAGE_NAME_LOWER=${REGISTRY}/${IMAGE_NAME,,}" >> $GITHUB_ENV
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: docker pull ${{ env.IMAGE_NAME_LOWER }}:${{ github.sha }}
+
+      - run: docker run --rm ${{ env.IMAGE_NAME_LOWER }}:${{ github.sha }} pytest tests/
