@@ -40,7 +40,17 @@ class DummyModel:
 
 @pytest.fixture()
 def client(monkeypatch, tmp_path):
+    import common
     import model.weather_model as weather_model
+
+    metadata_path = tmp_path / "weather_rf_v1_metadata.json"
+    metadata_path.write_text(
+        '{"model_version": "weather_rf_v1_test"}',
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(common, "METADATA_PATH", metadata_path)
+    monkeypatch.setattr(common, "DB_PATH", tmp_path / "test_weather.db")
 
     monkeypatch.setattr(
         weather_model,
@@ -50,9 +60,6 @@ def client(monkeypatch, tmp_path):
 
     sys.modules.pop("api.main", None)
     api_main = importlib.import_module("api.main")
-
-    test_db = tmp_path / "test_weather.db"
-    monkeypatch.setattr(api_main.common, "DB_PATH", test_db)
 
     return TestClient(api_main.app)
 
@@ -134,3 +141,5 @@ def test_predictions_endpoint_returns_saved_predictions(client):
     assert data[0]["predicted_temperature_2m"] == 18.5
     assert "model_version" in data[0]
     assert "inference_at" in data[0]
+    
+    
