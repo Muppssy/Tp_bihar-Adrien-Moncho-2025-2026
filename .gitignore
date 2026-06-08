@@ -49,3 +49,15 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Embeddings pre-entraines locaux
+GloVe/
+glove.6B.*
+
+# Modeles entraines lourds
+model/registry/*.pickle
+model/registry/*.keras
+model/registry/*.h5
+
+# Garder les metadonnees legeres des modeles
+!model/registry/*metadata.json

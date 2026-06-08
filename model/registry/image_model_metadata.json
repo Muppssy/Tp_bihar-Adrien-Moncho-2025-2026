@@ -1,0 +1,47 @@
+{
+    "model_name": "ResNet50 fine-tuning",
+    "model_path": "C:\\Users\\mupps\\Documents\\Tp_bihar-2025-2026\\model\\registry\\image_model.keras",
+    "saved_at": "2026-06-01T13:36:49",
+    "task": "multi-label image classification",
+    "framework": "TensorFlow/Keras",
+    "image_size": [
+        224,
+        224
+    ],
+    "batch_size": 32,
+    "threshold": 0.5,
+    "classes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+    ],
+    "num_classes": 18,
+    "train_size": 20942,
+    "validation_size": 4488,
+    "test_size": 4488,
+    "test_metrics": {
+        "model": "ResNet50 fine-tuning",
+        "threshold": 0.5,
+        "f1_micro": 0.7826298701298702,
+        "f1_macro": 0.6151825430188986,
+        "average_precision_micro": 0.8679158255968347,
+        "average_precision_macro": 0.6947482841632877,
+        "auc_micro": 0.970490816867098,
+        "auc_macro": 0.9373096991430605
+    }
+}

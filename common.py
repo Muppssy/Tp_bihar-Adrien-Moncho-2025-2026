@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -11,6 +12,11 @@ IMAGE_DIR = Path(r"C:\Users\mupps\Desktop\COMP5329S1A2Dataset\data")
 
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
+
+# Embeddings texte
+GLOVE_DIR = Path(os.getenv("GLOVE_DIR", BASE_DIR / "GloVe"))
+GLOVE_PATH = Path(os.getenv("GLOVE_PATH", GLOVE_DIR / "glove.6B.50d.txt"))
+GLOVE_EMBEDDING_DIM = 50
 
 # Model registry
 REGISTRY_DIR = BASE_DIR / "model" / "registry"
