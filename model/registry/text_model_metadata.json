@@ -1,0 +1,39 @@
+{
+  "model_name": "Logistic Regression",
+  "model_type": "sklearn",
+  "model_path": "C:\\Users\\mupps\\Documents\\Tp_bihar-2025-2026\\model\\registry\\text_model_logistic_regression.joblib",
+  "classes": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19"
+  ],
+  "metrics": {
+    "model": "Logistic Regression",
+    "threshold": 0.5,
+    "f1_micro": 0.7054425647848951,
+    "f1_macro": 0.6226707999036836,
+    "average_precision_micro": 0.8259612464264539,
+    "average_precision_macro": 0.7355597859010171,
+    "auc_micro": 0.9557237828318572,
+    "auc_macro": 0.9249771071427928
+  },
+  "max_sequence_length": 30,
+  "vocab_size": 5044,
+  "tokenizer_path": null,
+  "tfidf_vectorizer_path": "C:\\Users\\mupps\\Documents\\Tp_bihar-2025-2026\\model\\registry\\text_tfidf_vectorizer.joblib"
+}
